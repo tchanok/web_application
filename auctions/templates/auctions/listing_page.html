@@ -1,0 +1,143 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="content">
+    {% if listing.is_active == False %}
+        {% if user.is_authenticated and user == listing.winner %}
+            <div class="alert alert-success" role="alert">You won this auction.</div>
+        {% else %}
+            <div class="alert alert-danger" role="alert">This auction was closed</div>
+        {% endif %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-9">
+            <div class="row shadow" id="listing_detail">
+                <div class="col-md-4">
+                    <img class="listing-image" src="{{ listing.image_url }}" alt="{{ listing.title }}">
+                </div>
+                <div class="col-md-8">
+                    <h2>{{ listing.title }}</h2>
+                    {% if listing.is_active == True %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-secondary">Closed</span>
+                    {% endif %}
+                    <p><div class="row">
+                        <div class="col-md-3">Description: </div>
+                        <div class="col-md-9">{{ listing.description }}</div>
+                    </div></p>
+                    <p><div class="row">
+                        <div class="col-md-3">Seller: </div>
+                        <div class="col-md-9">{{ listing.owner }}</div>
+                    </div></p>
+                        <p><div class="row">
+                            <div class="col-md-3">Auction Close By: </div>
+                            {% if listing.close_date %}
+                            <div class="col-md-9">{{ listing.close_date }}</div>
+                            {% else %}
+                            <div class="col-md-9">-</div>
+                            {% endif %}
+                        </div></p>
+                    
+                    <p><div class="row">
+                        <div class="col-md-3">Current bid: </div>
+                        <div class="col-md-9" id="price"><strong> 
+                            {{ listing.currency }} {{ listing.price|floatformat:2  }}
+                        </strong></div>
+                    </div></p>
+                    {% if user.is_authenticated %}
+                        {% if user != listing.owner and listing.is_active == True %}
+                            <p><div class="row">
+                                <div class="col-md-3"></div>
+                                <div class="col-md-9">
+                                    <form action="{% url 'add_bid' listing_id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <input required type="number" name="new_bid" class="form-control" id="new_bid" placeholder="Bid Amount" min="{{listing.price}}">
+                                            </div>
+                                            <div class="col-8">
+                                                <button type="submit" class="btn btn-info">Submit Bid</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div></p>
+                        {% endif %}
+                        <p><div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-9">
+                                {% if is_watchlist %}
+                                    <form action="{% url 'remove_watchlist' listing_id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="remove_btn">Remove From Watchlist</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{% url 'add_watchlist' listing_id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="add_btn">Add To Watchlist</button>
+                                    </form>
+                                {% endif %}
+                                {% if listing.is_active == True and user == listing.owner %}
+                                    <form action="{% url 'close_bid' listing_id=listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="close_btn">Close This Auction</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div></p>
+                        
+                    {% endif %}
+                </div>
+            </div>
+            <br/>
+            <br/>
+            
+            {% if user.is_authenticated %}
+                <form action="{% url 'add_comment' listing_id=listing.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <h3>Add Comment</h3>
+                        <textarea class="form-control" name="new_comment" placeholder="Add New Comment" required></textarea>
+                        <div id="add_comment_btn_container">
+                            <button type="submit" id="add_comment_btn">Add Comment</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+            <br/>
+            <h2>Comments</h2>
+            <div>
+                <ul class="list-group">
+                    {% for comment in all_comments %}
+                        <li class="list-group-item">
+                            {{ comment.comment_message }}
+                            <br/>
+                            <p>Commented by <strong>{{ comment.author }}</strong> : {{ comment.created_at }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-3">
+            <h5>Bid History</h5>
+            <h6>Most recent bids</h6>
+            <ul class="list-group">
+                {% for bid in all_bids %}
+                    <li class="list-group-item">
+                        <strong>{{ listing.currency }} {{ bid.bid|floatformat:2 }}</strong>
+                        <p>{{ bid.created_at }} by <strong>{{ bid.bidder }}</strong></p>
+                    </li>
+                {% endfor %}
+                <li class="list-group-item">
+                    <strong>{{ listing.currency }} {{ listing.starting_bid|floatformat:2 }}</strong>
+                    <p>Starting bid</p>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+    
+{% endblock %}

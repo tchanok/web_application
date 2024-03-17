@@ -1,0 +1,80 @@
+body {
+    padding: 10px;
+}
+.app_name{
+    color: #FF7152;
+}
+.login_status{
+    background-color: antiquewhite;
+}
+.page_name{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FF7152;
+    color: white;
+    height: 70px;
+    border-radius: 20px;
+    font-size:x-large;
+    }
+.content{
+    margin: 20px 50px;
+}
+.card-text{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.listing-image{
+    width: 100%;
+    margin: 5px;
+}
+.add_btn{
+    width: 100%;
+    border-radius: 15px;
+    border: solid 2px #FF7152;
+    background-color: white;
+    color: #FF7152;
+}
+.add_btn:hover{
+    background-color: #fbb5a5;
+    color: white;
+}
+.remove_btn{
+    width: 100%;
+    border-radius: 15px;
+    border: solid 2px red;
+    background-color: white;
+    color: red;
+}
+.remove_btn:hover{    
+    border: solid 2px red;
+    background-color: red;
+    color: white;
+}
+.close_btn{
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 15px;
+    border: solid 2px #fa5e3c;
+    background-color: #fa5e3c;
+    color: white;
+}
+.close_btn:hover{    
+    border: solid 2px #fb9b86;
+    background-color: #fb9b86;
+    color: white;
+}
+#add_comment_btn_container{
+    margin: 10px 0px;
+}
+#add_comment_btn{
+    background-color: #FF7152;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+#add_comment_btn:hover{
+    background-color: #f74b24;
+}
