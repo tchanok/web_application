@@ -1,0 +1,160 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script>
+        function toggle_like(post_id) {
+            console.log("click");
+            console.log(this.innerHTML);
+            console.log(this.value);
+            // edit like database
+            fetch('/like', {
+                method: 'POST',
+                body: JSON.stringify({
+                    post_id: post_id,
+                })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result.like_action)
+                    // update likes amount
+                    const likes_display = document.querySelector(`#likes_post_${post_id}`);
+                    likes_display.innerHTML = `${result.likes_count} likes`;
+
+                    // change like button ui
+                    const like_icon = document.querySelector(`#like_icon_post_${post_id}`);
+                    const like_btn = document.querySelector(`#like_btn_post_${post_id}`);
+                    if (result.like_action === "like") {
+                        like_icon.innerHTML = "&#xf164;";
+                        like_icon.style = "color: blue";
+                        like_btn.style = "border: solid 1px grey; color: blue";
+                    } else {
+                        like_icon.innerHTML = "&#xf087;";
+                        like_icon.style = "";
+                        like_btn.style = "border: solid 1px grey;"
+                    }
+                    });
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div>
+        {% if page_name == "Following" %}
+        <h1 class="center"> {{ page_name }} </h1>
+        {% endif %}
+        <ul class="list-group">
+            {% if page_name == "index" and user.is_authenticated %}
+                <li class="list-group-item mx-5 shadow" id="new_post_container">
+                    <h2>New Post</h2>
+                    <form action="{% url 'new_post' %}" method="post">
+                        {% csrf_token %}
+                        <textarea name="post_message" row="4" class="new_post"></textarea>
+                        <br/>
+                        <input type="submit" value="Post" class="btn btn-primary" id="new_post_btn">
+                    </form>
+                </li>
+            {% endif %}
+            {% if page_name == "view_profile" %}
+                <li class="list-group-item mx-5 shadow" id="profile_container">
+                    <div class="row">
+                        <img width="150" height="150" src="https://cdn-icons-png.freepik.com/256/3033/3033143.png">
+                        <br/>
+                        
+                    </div>
+                    <h1>{{ viewed_user.username }}</h1>
+                    {% if user.is_authenticated and viewed_user != user %}
+                        {% if is_following %}
+                            <button type="submit" class="btn btn-danger" id="follow_btn" value="{{ viewed_user.id }}">Unfollow</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-primary" id="follow_btn" value="{{ viewed_user.id }}">Follow</button>
+                        {% endif %}
+                    {% endif %}
+                    <div class="row" id="follow_count_container">
+                        <div class="col-md-4" id="follower">
+                            <h6>Follower: {{ follower.count }}</h6>
+                        </div>
+                        <div class="col-md-4" id="following">
+                            <h6>Following: {{ following.count }}</h6>
+                        </div>
+                    </div>
+                </li>
+            {% endif %}
+            {% for post in page_objects %}
+                <li class="list-group-item mx-5 my-2 shadow" id="post_{{ post.id }}_container" style="margin-bottom: 0;">
+                    <div class="post_header">
+                        <svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>
+                        <a href="{% url 'view_profile' user_id=post.author.id %}" class="profile_link"><strong>@{{ post.author }}</strong></a>
+                        <span class="date">{{ post.date }}</span>
+                        {% if user.is_authenticated and post.author == user %}
+                            <div class="edit_btn_container">
+                                <button type="submit" class="edit_btn" value="{{ post.id }}" id="edit_btn_{{post.id}}">Edit</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div id="post_message_container_{{ post.id }}" class="post_body">
+                        <p id="message_{{ post.id }}">{{ post.post_message }}</p>
+                    </div>
+                    
+                    <div id="likes_post_{{post.id }}" class="likes_count">{{ post.post_like.all.count }} likes</div>
+                    {% if user.is_authenticated %}
+                        <div class="like_container">
+                            {% if post.is_liked %}
+                                <button type="submit" class="like_btn" onclick="toggle_like({{post.id}})" style="color: blue;" id="like_btn_post_{{post.id }}">
+                                    <i id="like_icon_post_{{post.id }}" style="color: blue;" class="fa">&#xf164;</i>
+                                    Like
+                                </button>
+                            {% else %}
+                                <button type="submit" class="like_btn" onclick="toggle_like({{post.id}})" id="like_btn_post_{{post.id }}">
+                                    <i id="like_icon_post_{{post.id }}" class="fa">&#xf087;</i>
+                                    Like
+                                </button>
+                            {% endif %}
+                        </div> 
+                    {% endif %}                
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <br/>
+    <nav aria-label="...">
+        <ul class="pagination justify-content-center">
+            {% if page_objects.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_objects.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            {% endif %}
+            {% for page_id in page_objects.paginator.page_range %}
+
+                {% if page_id == page_objects.number %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">
+                            {{ page_id }}
+                            <span class="sr-only">(current)</span>
+                        </span>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_id }}">{{ page_id }}</a></li>
+                {% endif %}
+
+            {% endfor %}
+            {% if page_objects.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_objects.next_page_number }}">Next</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endblock %}

@@ -1,0 +1,73 @@
+*{
+    font-size: 18px;
+}
+
+#navbar{
+    height: 100%;
+    position: fixed;
+    overflow: auto;
+    padding: 0 50px;
+}
+.navbar-brand{
+    font-size: 32px;
+}
+
+#body{
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+}
+/* #profile_container{
+    display: flex;
+    justify-content: center;
+} */
+.new_post{
+    width: 100%;
+    font-size: 24px;
+}
+.edit_area, #new_post_btn{
+    width: 100%;
+}
+
+.center{
+    text-align: center;
+}
+
+.edit_btn, .save_btn{
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 12px;
+    border: solid 1px grey;
+}
+
+.profile_link{
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
+}
+.date{
+    font-size: 12px;
+    float: right;
+}
+.post_body{
+    margin: 20px 0;
+}
+.likes_count{
+    font-size: 14px;
+}
+
+.like_btn{
+    /* width: 30%; */
+    border: solid 1px grey;
+    padding: 5px 20px;
+    border-radius: 5px;
+}
+.like_container{
+    border-top: solid 1px #0000001a;
+    padding-top: 10px;
+    font-size:16px;
+}
+#follow_count_container{
+    margin-top: 20px;
+}
