@@ -2,12 +2,12 @@
 https://cs50.harvard.edu/web/2020/
 
 ### This repository include projects for CS50’s Web Programming with Python and JavaScript
-Only project has shown in each branch \n
-0. search
-0. wiki
-0. commerce
-0. mail
-0. network
+Only project has shown in each branch
+1. search
+1. wiki
+1. commerce
+1. mail
+1. network
 
 
 ### The course contents
