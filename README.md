@@ -8,7 +8,7 @@ https://cs50.harvard.edu/web/2020/projects/3/mail/
 
 ### Run Project
 ```
-python manage.py makemigrations network
+python manage.py makemigrations mail
 ```
 ```
 python manage.py migrate
